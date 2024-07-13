@@ -1,0 +1,1 @@
+# genkit-firebase-functions-sample
