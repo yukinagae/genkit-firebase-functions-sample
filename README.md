@@ -102,12 +102,24 @@ $ export OPENAI_API_KEY=your_api_key
 $ npm run emulator
 ```
 
-To test the function on the emulator, use the following `curl` command:
+To test the function on the emulator, use the following `curl` command with a valid token (`token1234` in this project):
 
 ```bash
 $  curl -X POST -H "Content-Type: application/json" \
+-H "Authorization: Bearer token1234" \
 -d '{"data":{"url":"https://firebase.blog/posts/2024/04/next-announcements/","lang":"English"}}' \
 http://127.0.0.1:5001/[your_project_name]/us-central1/summarizeFlow
+{"result":"Firebase announced new features at Cloud Next '24, including Firestore vector search, Vertex AI SDKs, and public preview of Gemini integration."}
+```
+
+With an invalid token:
+
+```bash
+$  curl -X POST -H "Content-Type: application/json" \
+-H "Authorization: Bearer invalid_token" \
+-d '{"data":{"url":"https://firebase.blog/posts/2024/04/next-announcements/","lang":"English"}}' \
+http://127.0.0.1:5001/[your_project_name]/us-central1/summarizeFlow
+Unauthorized
 ```
 
 #### Deploy
@@ -148,8 +160,10 @@ To test your deployed function, execute the `curl` command below:
 
 ```bash
 $  curl -X POST -H "Content-Type: application/json" \
+-H "Authorization: Bearer token1234" \
 -d '{"data":{"url":"https://firebase.blog/posts/2024/04/next-announcements/","lang":"English"}}' \
 https://summarizeflow-[your_function_id]-uc.a.run.app
+{"result":"Firebase announced new features at Cloud Next '24, including Firestore vector search, Vertex AI SDKs, and public preview of Gemini integration."}
 ```
 
 Replace `[your_function_id]` with your Firebase project value, found in the Firebase Console under the Functions Dashboard.

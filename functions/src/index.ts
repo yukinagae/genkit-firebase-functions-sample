@@ -3,7 +3,7 @@ import * as z from 'zod'
 
 import { defineTool, generate } from '@genkit-ai/ai'
 import { configureGenkit } from '@genkit-ai/core'
-import { noAuth, onFlow } from '@genkit-ai/firebase/functions'
+import { onFlow } from '@genkit-ai/firebase/functions'
 import { gpt4o, openAI } from 'genkitx-openai'
 
 // Configure Genkit with necessary plugins and settings
@@ -46,7 +46,19 @@ export const summarizeFlow = onFlow(
     name: 'summarizeFlow',
     inputSchema: z.object({ url: z.string(), lang: z.string() }),
     outputSchema: z.string(),
-    authPolicy: noAuth(), // No authentication required
+    authPolicy: {
+      async policy() {},
+      // restrict access using Bearer token
+      async provider(req, res, next) {
+        const token = req.headers.authorization?.split(/[Bb]earer /)[1]
+        // dummy token
+        if (token && token === 'token1234') {
+          next()
+        } else {
+          throw new Error('Unauthorized')
+        }
+      },
+    },
     httpsOptions: { secrets: ['OPENAI_API_KEY'] }, // Bind the OpenAI API key as a secret
   },
   async ({ url, lang }) => {
