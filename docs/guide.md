@@ -93,7 +93,7 @@ For scenarios where authorization is not necessary, use `noAuth()` as follows:
 ```typescript
 import { noAuth } from "@genkit-ai/firebase/functions";
 
-authPolicy: noAuth();
+authPolicy: noAuth(),
 ```
 
 #### Deploy
@@ -118,17 +118,19 @@ $ firebase functions:secrets:access OPENAI_API_KEY
 your_api_key
 ```
 
-In the Cloud Functions dashboard, you'll notice that a secret value `OPENAI_API_KEY` is specified within the `VARIABLES` section.
-
-![Cloud Functions GUI - variables](./1.png)
-
 After securing your API key, you're ready to deploy your application to Firebase Functions:
 
 ```bash
 $ npm run deploy
 ```
 
-![Firebase GUI - your function](./2.png)
+![Firebase GUI - your function](./1.png)
+
+In the Cloud Functions dashboard, you'll notice that a secret value `OPENAI_API_KEY` is specified within the `VARIABLES` section.
+
+NOTE: Secret values within Cloud Functions are applied after deployment, not before deployment.
+
+![Cloud Functions GUI - variables](./2.png)
 
 To test your deployed function, execute the `curl` command below:
 
