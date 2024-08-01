@@ -96,7 +96,7 @@ import { noAuth } from "@genkit-ai/firebase/functions";
 authPolicy: noAuth(),
 ```
 
-#### Deploy
+## Deploy
 
 To authenticate with Firebase and access your projects, use the Firebase CLI login command:
 
