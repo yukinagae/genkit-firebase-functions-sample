@@ -1,24 +1,22 @@
 import * as cheerio from 'cheerio'
-import * as z from 'zod'
 
-import { defineTool, generate } from '@genkit-ai/ai'
-import { configureGenkit } from '@genkit-ai/core'
+import { genkit, z } from 'genkit'
 import { onFlow } from '@genkit-ai/firebase/functions'
 import { gpt4o, openAI } from 'genkitx-openai'
 
+// Log debug output to the console.
+import { logger } from 'genkit/logging'
+logger.setLogLevel('debug')
+
 // Configure Genkit with necessary plugins and settings
-configureGenkit({
+const ai = genkit({
   // Use the OpenAI plugin with the provided API key.
   // Ensure the OPENAI_API_KEY environment variable is set before running.
   plugins: [openAI({ apiKey: process.env.OPENAI_API_KEY })],
-  // Log debug output to the console.
-  logLevel: 'debug',
-  // Perform OpenTelemetry instrumentation and enable trace collection.
-  enableTracingAndMetrics: true,
 })
 
 // Tool definition for loading web content
-const webLoader = defineTool(
+const webLoader = ai.defineTool(
   {
     name: 'webLoader',
     description: 'Loads a webpage and returns the textual content.',
@@ -42,6 +40,7 @@ const webLoader = defineTool(
 
 // Flow definition for summarizing web content
 export const summarizeFlow = onFlow(
+  ai,
   {
     name: 'summarizeFlow',
     inputSchema: z.object({ url: z.string(), lang: z.string() }),
@@ -62,7 +61,7 @@ export const summarizeFlow = onFlow(
     httpsOptions: { secrets: ['OPENAI_API_KEY'] }, // Bind the OpenAI API key as a secret
   },
   async ({ url, lang }) => {
-    const llmResponse = await generate({
+    const llmResponse = await ai.generate({
       prompt: `First, fetch this link: "${url}". Then, summarize the content within 20 words in ${lang}.`,
       model: gpt4o, // Specify the model to use for generation
       tools: [webLoader], // Include the webLoader tool defined earlier for fetching webpage content
@@ -71,6 +70,6 @@ export const summarizeFlow = onFlow(
       },
     })
 
-    return llmResponse.text()
+    return llmResponse.text
   },
 )
